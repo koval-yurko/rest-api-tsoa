@@ -100,3 +100,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# Verification and implementation files (should not be committed)
+verify-*.js
+IMPLEMENTATION_SUMMARY.md
