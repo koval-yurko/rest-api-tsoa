@@ -11,7 +11,8 @@
     "generate-routes": "tsoa routes",
     "generate-swagger": "tsoa spec",
     "prebuild": "npm run generate-spec",
-    "setup": "npm install && npm run generate-spec && npm run build"
+    "setup": "npm install && npm run generate-spec && npm run build",
+    "test-cors": "node test-cors.js"
   },
   "keywords": [
     "typescript",
