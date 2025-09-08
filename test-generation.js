@@ -18,11 +18,11 @@ try {
     console.log('📁 Created dist directory');
   }
 
-  // Ensure routes directory exists
-  const routesDir = path.join(__dirname, 'src', 'routes');
-  if (!fs.existsSync(routesDir)) {
-    fs.mkdirSync(routesDir, { recursive: true });
-    console.log('📁 Created routes directory');
+  // Ensure openapi directory exists
+  const openapiDir = path.join(__dirname, 'src', 'openapi');
+  if (!fs.existsSync(openapiDir)) {
+    fs.mkdirSync(openapiDir, { recursive: true });
+    console.log('📁 Created openapi directory');
   }
 
   // Generate routes first
@@ -36,11 +36,11 @@ try {
   console.log('✅ Generation completed successfully!');
   
   // Check if files were created
-  const routesFile = path.join(routesDir, 'routes.ts');
+  const routesFile = path.join(openapiDir, 'routes.ts');
   const specFile = path.join(distDir, 'swagger.json');
   
   if (fs.existsSync(routesFile)) {
-    console.log('✓ Routes file created: src/routes/routes.ts');
+    console.log('✓ Routes file created: src/openapi/routes.ts');
   } else {
     console.log('✗ Routes file not found');
   }
@@ -50,12 +50,51 @@ try {
     
     // Read and display security info from the spec
     const spec = JSON.parse(fs.readFileSync(specFile, 'utf8'));
+    console.log('\n📋 OpenAPI Spec Analysis:');
+    console.log('- Title:', spec.info?.title);
+    console.log('- Version:', spec.info?.version);
+    
+    // Check for servers configuration
+    if (spec.servers && spec.servers.length > 0) {
+      console.log('✓ Servers found:', spec.servers.map(s => s.url));
+    } else {
+      console.log('⚠ No servers configuration found (this is expected - will be added dynamically)');
+    }
+    
+    // Check for security schemes
     if (spec.components && spec.components.securitySchemes) {
       console.log('✓ Security schemes found in OpenAPI spec');
       console.log('Security schemes:', Object.keys(spec.components.securitySchemes));
+      
+      // Display details of each security scheme
+      Object.entries(spec.components.securitySchemes).forEach(([name, scheme]) => {
+        console.log(`  - ${name}:`, {
+          type: scheme.type,
+          name: scheme.name,
+          in: scheme.in,
+          description: scheme.description
+        });
+      });
+    } else if (spec.securityDefinitions) {
+      console.log('✓ Security definitions found (OpenAPI 2.0 format)');
+      console.log('Security definitions:', Object.keys(spec.securityDefinitions));
     } else {
       console.log('⚠ No security schemes found in OpenAPI spec');
     }
+    
+    // Check for security requirements on paths
+    let securedEndpoints = 0;
+    if (spec.paths) {
+      Object.entries(spec.paths).forEach(([path, methods]) => {
+        Object.entries(methods).forEach(([method, operation]) => {
+          if (operation.security && operation.security.length > 0) {
+            securedEndpoints++;
+          }
+        });
+      });
+    }
+    console.log(`✓ Found ${securedEndpoints} secured endpoints`);
+    
   } else {
     console.log('✗ OpenAPI spec file not found');
   }

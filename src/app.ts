@@ -65,11 +65,34 @@ app.get("/health", (req: Request, res: Response) => {
 // Register tsoa routes
 RegisterRoutes(app);
 
-// Serve OpenAPI spec
+// Helper function to get the server URL dynamically
+function getServerUrl(req: Request): string {
+  // For Heroku and other cloud platforms, use the host header
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const host = req.get('host') || `localhost:${PORT}`;
+  return `${protocol}://${host}`;
+}
+
+// Serve OpenAPI spec with dynamic server configuration
 app.get("/swagger.json", (req: Request, res: Response) => {
   try {
     const swaggerSpec = require("../dist/swagger.json");
-    res.json(swaggerSpec);
+    
+    // Dynamically set the server URL based on the request
+    const serverUrl = getServerUrl(req);
+    
+    // Update the spec with the current server URL
+    const dynamicSpec = {
+      ...swaggerSpec,
+      servers: [
+        {
+          url: serverUrl + "/api",
+          description: "Current server"
+        }
+      ]
+    };
+    
+    res.json(dynamicSpec);
   } catch (error) {
     res.status(404).json({
       success: false,
@@ -78,15 +101,71 @@ app.get("/swagger.json", (req: Request, res: Response) => {
   }
 });
 
-// Serve Swagger UI
+// Serve Swagger UI with enhanced configuration
 app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
   try {
     const swaggerSpec = require("../dist/swagger.json");
-    swaggerUi.setup(swaggerSpec, {
+    
+    // Dynamically set the server URL based on the request
+    const serverUrl = getServerUrl(req);
+    
+    // Update the spec with the current server URL
+    const dynamicSpec = {
+      ...swaggerSpec,
+      servers: [
+        {
+          url: serverUrl + "/api",
+          description: "Current server"
+        }
+      ]
+    };
+    
+    // Enhanced Swagger UI configuration
+    const swaggerOptions = {
       explorer: true,
-      customCss: '.swagger-ui .topbar { display: none }',
-      customSiteTitle: "TypeScript Express API Documentation"
-    })(req, res, next);
+      customCss: `
+        .swagger-ui .topbar { display: none }
+        .swagger-ui .scheme-container { background: #f7f7f7; padding: 10px; border-radius: 4px; margin-bottom: 10px; }
+        .swagger-ui .auth-wrapper { margin-bottom: 20px; }
+      `,
+      customSiteTitle: "TypeScript Express API Documentation",
+      swaggerOptions: {
+        // Enable the authorize button and make it prominent
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        // Pre-populate with example API key for easier testing
+        initOAuth: {
+          clientId: "swagger-ui",
+          realm: "swagger-ui-realm",
+          appName: "Swagger UI"
+        }
+      },
+      customJs: `
+        // Add custom JavaScript to enhance the auth experience
+        window.onload = function() {
+          // Add helpful text about API keys
+          setTimeout(function() {
+            const authSection = document.querySelector('.auth-wrapper');
+            if (authSection && !document.querySelector('.api-key-help')) {
+              const helpText = document.createElement('div');
+              helpText.className = 'api-key-help';
+              helpText.style.cssText = 'background: #e7f3ff; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #0066cc;';
+              helpText.innerHTML = '<strong>Available API Keys for Testing:</strong><br/>' +
+                '• demo-api-key (Demo User)<br/>' +
+                '• test-api-key-123 (Test User)<br/>' +
+                '• admin-key-456 (Admin User)<br/>' +
+                '• user-key-789 (Regular User)';
+              authSection.insertBefore(helpText, authSection.firstChild);
+            }
+          }, 1000);
+        };
+      `
+    };
+    
+    swaggerUi.setup(dynamicSpec, swaggerOptions)(req, res, next);
   } catch (error) {
     res.status(404).json({
       success: false,
