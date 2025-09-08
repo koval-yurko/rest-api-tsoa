@@ -11,7 +11,8 @@ import {
   SuccessResponse,
   Response,
   Tags,
-  Example
+  Example,
+  Security
 } from "tsoa";
 
 import {
@@ -241,8 +242,10 @@ export class ProductController extends Controller {
    * @param requestBody Product creation data
    */
   @Post()
+  @Security("api_key")
   @SuccessResponse("201", "Product created successfully")
   @Response<ErrorResponse>("400", "Invalid request data")
+  @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("500", "Internal server error")
   @Example<ProductResponse>({
     success: true,
@@ -279,7 +282,9 @@ export class ProductController extends Controller {
    * @param requestBody Product update data
    */
   @Put("{productId}")
+  @Security("api_key")
   @SuccessResponse("200", "Product updated successfully")
+  @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "Product not found")
   @Response<ErrorResponse>("400", "Invalid request data")
   @Response<ErrorResponse>("500", "Internal server error")
@@ -309,7 +314,9 @@ export class ProductController extends Controller {
    * @param productId The product's identifier
    */
   @Delete("{productId}")
+  @Security("api_key")
   @SuccessResponse("200", "Product deleted successfully")
+  @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "Product not found")
   @Response<ErrorResponse>("500", "Internal server error")
   public async deleteProduct(@Path() productId: number): Promise<ProductResponse> {

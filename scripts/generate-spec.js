@@ -19,10 +19,10 @@ try {
   }
 
   // Ensure routes directory exists
-  const routesDir = path.join(__dirname, '..', 'src', 'routes');
+  const routesDir = path.join(__dirname, '..', 'src', 'openapi');
   if (!fs.existsSync(routesDir)) {
     fs.mkdirSync(routesDir, { recursive: true });
-    console.log('📁 Created routes directory');
+    console.log('📁 Created openapi directory');
   }
 
   // Generate routes and OpenAPI spec
@@ -35,7 +35,7 @@ try {
   console.log('✅ OpenAPI specification and routes generated successfully!');
   console.log('');
   console.log('Generated files:');
-  console.log('  - src/routes/routes.ts (Express routes)');
+  console.log('  - src/openapi/routes.ts (Express routes)');
   console.log('  - dist/swagger.json (OpenAPI specification)');
   console.log('');
   console.log('Next steps:');

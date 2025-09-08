@@ -16,7 +16,7 @@
     "basePath": "/api"
   },
   "routes": {
-    "routesDir": "src/routes",
+    "routesDir": "src/openapi",
     "authenticationModule": "src/openapi/authentication.ts",
     "iocModule": "src/openapi/ioc.ts"
   }
