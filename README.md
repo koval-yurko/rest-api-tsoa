@@ -98,7 +98,6 @@ The server will start on `http://localhost:3000`
 - `DELETE /api/products/{productId}` - Delete product
 
 ### Documentation
-- `GET /` - API overview and documentation links
 - `GET /swagger.json` - OpenAPI specification
 
 ## Example API Calls

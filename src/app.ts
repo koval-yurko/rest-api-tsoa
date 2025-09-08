@@ -32,23 +32,6 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-// API documentation endpoint
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: "TypeScript Express API with tsoa",
-    documentation: {
-      swagger: "/swagger.json",
-      endpoints: {
-        users: "/api/users",
-        products: "/api/products",
-        health: "/health"
-      }
-    },
-    version: "1.0.0"
-  });
-});
-
 // Register tsoa routes
 RegisterRoutes(app);
 
@@ -94,7 +77,6 @@ app.use((req: Request, res: Response) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/`);
   console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
   console.log(`📋 OpenAPI Spec: http://localhost:${PORT}/swagger.json`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/users`);

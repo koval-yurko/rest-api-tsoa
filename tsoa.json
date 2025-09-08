@@ -2,6 +2,7 @@
   "entryFile": "src/app.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
   "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
+  "iocModule": "src/ioc.ts",
   "spec": {
     "outputDirectory": "dist",
     "specVersion": 3,
@@ -16,6 +17,7 @@
   },
   "routes": {
     "routesDir": "src/routes",
-    "authenticationModule": "src/authentication.ts"
+    "authenticationModule": "src/authentication.ts",
+    "iocModule": "src/ioc.ts"
   }
 }

@@ -60,7 +60,6 @@ curl http://localhost:3000/swagger.json
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
-| GET | `/` | API documentation |
 | GET | `/swagger.json` | OpenAPI specification |
 | GET | `/api/users` | Get all users |
 | GET | `/api/users/{id}` | Get user by ID |

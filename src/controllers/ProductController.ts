@@ -24,6 +24,7 @@ import {
   ProductsResponse
 } from "../models/Product";
 import { ErrorResponse } from "../models/Common";
+import { IProductService } from "../ioc";
 
 /**
  * Controller for managing products
@@ -31,6 +32,93 @@ import { ErrorResponse } from "../models/Common";
 @Route("products")
 @Tags("Products")
 export class ProductController extends Controller {
+  private productService: IProductService;
+
+  constructor(productService?: IProductService) {
+    super();
+    // If no service is injected, fall back to mock implementation
+    this.productService = productService || {
+      async getProducts() {
+        return [
+          {
+            id: 1,
+            name: "Laptop",
+            description: "High-performance laptop for professionals",
+            price: 99999,
+            category: ProductCategory.ELECTRONICS,
+            stock: 10,
+            sku: "LAP-001",
+            isActive: true,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date("2023-01-01T00:00:00Z")
+          },
+          {
+            id: 2,
+            name: "T-Shirt",
+            description: "Comfortable cotton t-shirt",
+            price: 2999,
+            category: ProductCategory.CLOTHING,
+            stock: 50,
+            sku: "TSH-001",
+            isActive: true,
+            createdAt: new Date("2023-01-02T00:00:00Z"),
+            updatedAt: new Date("2023-01-02T00:00:00Z")
+          }
+        ];
+      },
+      async getProductById(id: number) {
+        if (id === 1) {
+          return {
+            id: 1,
+            name: "Laptop",
+            description: "High-performance laptop for professionals",
+            price: 99999,
+            category: ProductCategory.ELECTRONICS,
+            stock: 10,
+            sku: "LAP-001",
+            isActive: true,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date("2023-01-01T00:00:00Z")
+          };
+        }
+        return null;
+      },
+      async searchProducts(query: any) {
+        const products = await this.getProducts();
+        return products; // Simplified for mock
+      },
+      async createProduct(productData: any) {
+        return {
+          id: Math.floor(Math.random() * 1000) + 4,
+          ...productData,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      },
+      async updateProduct(id: number, productData: any) {
+        if (id === 1) {
+          return {
+            id,
+            name: productData.name || "Laptop",
+            description: productData.description || "High-performance laptop",
+            price: productData.price || 99999,
+            category: productData.category || ProductCategory.ELECTRONICS,
+            stock: productData.stock || 10,
+            sku: "LAP-001",
+            isActive: productData.isActive !== undefined ? productData.isActive : true,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date()
+          };
+        }
+        return null;
+      },
+      async deleteProduct(id: number) {
+        return id === 1;
+      }
+    };
+  }
+
   /**
    * Search products with various filters
    * @param search Search term for product name or description
@@ -72,76 +160,19 @@ export class ProductController extends Controller {
     @Query() page: number = 1,
     @Query() limit: number = 10
   ): Promise<ProductsResponse> {
-    // Mock data - in real app, this would come from database with actual search/filtering
-    let mockProducts: Product[] = [
-      {
-        id: 1,
-        name: "Laptop",
-        description: "High-performance laptop for professionals",
-        price: 99999, // $999.99 in cents
-        category: ProductCategory.ELECTRONICS,
-        stock: 10,
-        sku: "LAP-001",
-        isActive: true,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date("2023-01-01T00:00:00Z")
-      },
-      {
-        id: 2,
-        name: "T-Shirt",
-        description: "Comfortable cotton t-shirt",
-        price: 2999, // $29.99 in cents
-        category: ProductCategory.CLOTHING,
-        stock: 50,
-        sku: "TSH-001",
-        isActive: true,
-        createdAt: new Date("2023-01-02T00:00:00Z"),
-        updatedAt: new Date("2023-01-02T00:00:00Z")
-      },
-      {
-        id: 3,
-        name: "Programming Book",
-        description: "Learn TypeScript programming",
-        price: 4999, // $49.99 in cents
-        category: ProductCategory.BOOKS,
-        stock: 25,
-        sku: "BOK-001",
-        isActive: true,
-        createdAt: new Date("2023-01-03T00:00:00Z"),
-        updatedAt: new Date("2023-01-03T00:00:00Z")
-      }
-    ];
-
-    // Apply filters (mock implementation)
-    if (search) {
-      mockProducts = mockProducts.filter(p => 
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.description.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    if (category) {
-      mockProducts = mockProducts.filter(p => p.category === category);
-    }
-
-    if (minPrice !== undefined) {
-      mockProducts = mockProducts.filter(p => p.price >= minPrice);
-    }
-
-    if (maxPrice !== undefined) {
-      mockProducts = mockProducts.filter(p => p.price <= maxPrice);
-    }
+    const query = { search, category, minPrice, maxPrice };
+    const products = await this.productService.searchProducts(query);
 
     // Apply pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    const paginatedProducts = mockProducts.slice(startIndex, endIndex);
+    const paginatedProducts = products.slice(startIndex, endIndex);
 
     return {
       success: true,
       message: "Products retrieved successfully",
       data: paginatedProducts,
-      total: mockProducts.length,
+      total: products.length,
       page,
       limit
     };
@@ -188,21 +219,9 @@ export class ProductController extends Controller {
     }
   })
   public async getProductById(@Path() productId: number): Promise<ProductResponse> {
-    // Mock data - in real app, this would come from database
-    if (productId === 1) {
-      const product: Product = {
-        id: 1,
-        name: "Laptop",
-        description: "High-performance laptop for professionals",
-        price: 99999,
-        category: ProductCategory.ELECTRONICS,
-        stock: 10,
-        sku: "LAP-001",
-        isActive: true,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date("2023-01-01T00:00:00Z")
-      };
+    const product = await this.productService.getProductById(productId);
 
+    if (product) {
       return {
         success: true,
         message: "Product retrieved successfully",
@@ -244,19 +263,7 @@ export class ProductController extends Controller {
   public async createProduct(
     @Body() requestBody: CreateProductRequest
   ): Promise<ProductResponse> {
-    // Mock creation - in real app, this would save to database
-    const newProduct: Product = {
-      id: Math.floor(Math.random() * 1000) + 4, // Mock ID generation
-      name: requestBody.name,
-      description: requestBody.description,
-      price: requestBody.price,
-      category: requestBody.category,
-      stock: requestBody.stock,
-      sku: requestBody.sku,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    const newProduct = await this.productService.createProduct(requestBody);
 
     this.setStatus(201);
     return {
@@ -280,21 +287,9 @@ export class ProductController extends Controller {
     @Path() productId: number,
     @Body() requestBody: UpdateProductRequest
   ): Promise<ProductResponse> {
-    // Mock update - in real app, this would update in database
-    if (productId === 1) {
-      const updatedProduct: Product = {
-        id: productId,
-        name: requestBody.name || "Laptop",
-        description: requestBody.description || "High-performance laptop",
-        price: requestBody.price || 99999,
-        category: requestBody.category || ProductCategory.ELECTRONICS,
-        stock: requestBody.stock || 10,
-        sku: "LAP-001",
-        isActive: requestBody.isActive !== undefined ? requestBody.isActive : true,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date()
-      };
+    const updatedProduct = await this.productService.updateProduct(productId, requestBody);
 
+    if (updatedProduct) {
       return {
         success: true,
         message: "Product updated successfully",
@@ -318,8 +313,9 @@ export class ProductController extends Controller {
   @Response<ErrorResponse>("404", "Product not found")
   @Response<ErrorResponse>("500", "Internal server error")
   public async deleteProduct(@Path() productId: number): Promise<ProductResponse> {
-    // Mock deletion - in real app, this would delete from database
-    if (productId === 1) {
+    const deleted = await this.productService.deleteProduct(productId);
+
+    if (deleted) {
       return {
         success: true,
         message: "Product deleted successfully"

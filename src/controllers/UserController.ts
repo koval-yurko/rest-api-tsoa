@@ -22,6 +22,7 @@ import {
   UsersResponse
 } from "../models/User";
 import { ErrorResponse } from "../models/Common";
+import { IUserService } from "../ioc";
 
 /**
  * Controller for managing users
@@ -29,6 +30,76 @@ import { ErrorResponse } from "../models/Common";
 @Route("users")
 @Tags("Users")
 export class UserController extends Controller {
+  private userService: IUserService;
+
+  constructor(userService?: IUserService) {
+    super();
+    // If no service is injected, fall back to mock implementation
+    this.userService = userService || {
+      async getUsers() {
+        return [
+          {
+            id: 1,
+            email: "john.doe@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            age: 30,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date("2023-01-01T00:00:00Z")
+          },
+          {
+            id: 2,
+            email: "jane.smith@example.com",
+            firstName: "Jane",
+            lastName: "Smith",
+            age: 25,
+            createdAt: new Date("2023-01-02T00:00:00Z"),
+            updatedAt: new Date("2023-01-02T00:00:00Z")
+          }
+        ];
+      },
+      async getUserById(id: number) {
+        if (id === 1) {
+          return {
+            id: 1,
+            email: "john.doe@example.com",
+            firstName: "John",
+            lastName: "Doe",
+            age: 30,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date("2023-01-01T00:00:00Z")
+          };
+        }
+        return null;
+      },
+      async createUser(userData: any) {
+        return {
+          id: Math.floor(Math.random() * 1000) + 3,
+          ...userData,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      },
+      async updateUser(id: number, userData: any) {
+        if (id === 1) {
+          return {
+            id,
+            email: userData.email || "john.doe@example.com",
+            firstName: userData.firstName || "John",
+            lastName: userData.lastName || "Doe",
+            age: userData.age || 30,
+            createdAt: new Date("2023-01-01T00:00:00Z"),
+            updatedAt: new Date()
+          };
+        }
+        return null;
+      },
+      async deleteUser(id: number) {
+        return id === 1;
+      }
+    };
+  }
+
   /**
    * Get all users with optional pagination
    * @param page Page number (default: 1)
@@ -57,37 +128,16 @@ export class UserController extends Controller {
     @Query() page: number = 1,
     @Query() limit: number = 10
   ): Promise<UsersResponse> {
-    // Mock data - in real app, this would come from database
-    const mockUsers: User[] = [
-      {
-        id: 1,
-        email: "john.doe@example.com",
-        firstName: "John",
-        lastName: "Doe",
-        age: 30,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date("2023-01-01T00:00:00Z")
-      },
-      {
-        id: 2,
-        email: "jane.smith@example.com",
-        firstName: "Jane",
-        lastName: "Smith",
-        age: 25,
-        createdAt: new Date("2023-01-02T00:00:00Z"),
-        updatedAt: new Date("2023-01-02T00:00:00Z")
-      }
-    ];
-
+    const users = await this.userService.getUsers();
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    const paginatedUsers = mockUsers.slice(startIndex, endIndex);
+    const paginatedUsers = users.slice(startIndex, endIndex);
 
     return {
       success: true,
       message: "Users retrieved successfully",
       data: paginatedUsers,
-      total: mockUsers.length
+      total: users.length
     };
   }
 
@@ -113,18 +163,9 @@ export class UserController extends Controller {
     }
   })
   public async getUserById(@Path() userId: number): Promise<UserResponse> {
-    // Mock data - in real app, this would come from database
-    if (userId === 1) {
-      const user: User = {
-        id: 1,
-        email: "john.doe@example.com",
-        firstName: "John",
-        lastName: "Doe",
-        age: 30,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date("2023-01-01T00:00:00Z")
-      };
+    const user = await this.userService.getUserById(userId);
 
+    if (user) {
       return {
         success: true,
         message: "User retrieved successfully",
@@ -163,16 +204,7 @@ export class UserController extends Controller {
   public async createUser(
     @Body() requestBody: CreateUserRequest
   ): Promise<UserResponse> {
-    // Mock creation - in real app, this would save to database
-    const newUser: User = {
-      id: Math.floor(Math.random() * 1000) + 3, // Mock ID generation
-      email: requestBody.email,
-      firstName: requestBody.firstName,
-      lastName: requestBody.lastName,
-      age: requestBody.age,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    const newUser = await this.userService.createUser(requestBody);
 
     this.setStatus(201);
     return {
@@ -209,18 +241,9 @@ export class UserController extends Controller {
     @Path() userId: number,
     @Body() requestBody: UpdateUserRequest
   ): Promise<UserResponse> {
-    // Mock update - in real app, this would update in database
-    if (userId === 1) {
-      const updatedUser: User = {
-        id: userId,
-        email: requestBody.email || "john.doe@example.com",
-        firstName: requestBody.firstName || "John",
-        lastName: requestBody.lastName || "Doe",
-        age: requestBody.age || 30,
-        createdAt: new Date("2023-01-01T00:00:00Z"),
-        updatedAt: new Date()
-      };
+    const updatedUser = await this.userService.updateUser(userId, requestBody);
 
+    if (updatedUser) {
       return {
         success: true,
         message: "User updated successfully",
@@ -248,8 +271,9 @@ export class UserController extends Controller {
     message: "User deleted successfully"
   })
   public async deleteUser(@Path() userId: number): Promise<UserResponse> {
-    // Mock deletion - in real app, this would delete from database
-    if (userId === 1) {
+    const deleted = await this.userService.deleteUser(userId);
+
+    if (deleted) {
       return {
         success: true,
         message: "User deleted successfully"
