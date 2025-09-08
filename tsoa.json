@@ -9,11 +9,19 @@
     "info": {
       "title": "TypeScript Express API",
       "version": "1.0.0",
-      "description": "API built with TypeScript, Express, and tsoa"
+      "description": "API built with TypeScript, Express, and tsoa. Use API key authentication for protected endpoints."
     },
     "host": "localhost:3000",
     "schemes": ["http"],
-    "basePath": "/api"
+    "basePath": "/api",
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header",
+        "description": "API key for authentication. Use one of: demo-api-key, test-api-key-123, admin-key-456, user-key-789"
+      }
+    }
   },
   "routes": {
     "routesDir": "src/routes",
