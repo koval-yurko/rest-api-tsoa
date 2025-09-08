@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./routes/routes";
 import { ErrorResponse } from "./models/Common";
@@ -10,18 +11,46 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS middleware (for development)
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-api-key");
+// Enhanced CORS middleware for Swagger UI cross-domain support
+app.use(cors({
+  // Allow requests from any origin (for development and Swagger UI)
+  origin: "*",
   
-  if (req.method === "OPTIONS") {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+  // Allow all HTTP methods that Swagger UI might use
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+  
+  // Allow all headers that Swagger UI and API clients might send
+  allowedHeaders: [
+    "Origin", 
+    "X-Requested-With", 
+    "Content-Type", 
+    "Accept", 
+    "Authorization", 
+    "x-api-key", 
+    "Cache-Control", 
+    "Pragma", 
+    "Expires"
+  ],
+  
+  // Expose headers that clients might need to read
+  exposedHeaders: [
+    "Content-Length", 
+    "Content-Type", 
+    "Authorization", 
+    "x-api-key", 
+    "X-Total-Count"
+  ],
+  
+  // Allow credentials (cookies, authorization headers, etc.)
+  credentials: true,
+  
+  // Cache preflight requests for 24 hours to improve performance
+  maxAge: 86400,
+  
+  // Handle preflight requests
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+}));
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
