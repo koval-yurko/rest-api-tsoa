@@ -22,7 +22,7 @@ import {
   UsersResponse
 } from "../models/User";
 import { ErrorResponse } from "../models/Common";
-import { IUserService } from "../ioc";
+import { IUserService } from "../interfaces";
 
 /**
  * Controller for managing users

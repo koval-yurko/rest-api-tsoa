@@ -24,7 +24,7 @@ import {
   ProductsResponse
 } from "../models/Product";
 import { ErrorResponse } from "../models/Common";
-import { IProductService } from "../ioc";
+import { IProductService } from "../interfaces";
 
 /**
  * Controller for managing products
