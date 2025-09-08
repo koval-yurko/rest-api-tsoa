@@ -183,7 +183,7 @@ The project includes a simple authentication example using API keys. To use auth
 - Use tsoa decorators (`@Route`, `@Get`, `@Post`, etc.) for API definition
 - Custom types are defined in the `models/` directory
 - The `tsoa.json` file configures OpenAPI generation
-- Routes are automatically generated in `src/routes/routes.ts`
+- Routes are automatically generated in `src/openapi/routes.ts`
 
 ## Next Steps
 

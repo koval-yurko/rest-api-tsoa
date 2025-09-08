@@ -1,7 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import { RegisterRoutes } from "./routes/routes";
+import { RegisterRoutes } from "./openapi/routes";
 import { ErrorResponse } from "./models/Common";
 
 const app: Application = express();

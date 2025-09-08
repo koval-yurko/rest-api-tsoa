@@ -35,7 +35,7 @@ try {
   console.log('✅ OpenAPI specification and routes generated successfully!');
   console.log('');
   console.log('Generated files:');
-  console.log('  - src/routes/routes.ts (Express routes)');
+  console.log('  - src/openapi/routes.ts (Express routes)');
   console.log('  - dist/swagger.json (OpenAPI specification)');
   console.log('');
   console.log('Next steps:');

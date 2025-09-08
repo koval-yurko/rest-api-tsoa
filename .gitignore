@@ -9,7 +9,7 @@ dist/
 build/
 
 # Generated files
-src/routes/routes.ts
+src/openapi/routes.ts
 swagger.json
 
 # Environment variables
