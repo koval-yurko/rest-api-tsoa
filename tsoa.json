@@ -1,0 +1,21 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "dist",
+    "specVersion": 3,
+    "info": {
+      "title": "TypeScript Express API",
+      "version": "1.0.0",
+      "description": "API built with TypeScript, Express, and tsoa"
+    },
+    "host": "localhost:3000",
+    "schemes": ["http"],
+    "basePath": "/api"
+  },
+  "routes": {
+    "routesDir": "src/routes",
+    "authenticationModule": "src/authentication.ts"
+  }
+}
