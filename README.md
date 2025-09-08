@@ -7,6 +7,7 @@ A minimal TypeScript project using Express framework and tsoa for OpenAPI specif
 - **TypeScript**: Full TypeScript support with strict type checking
 - **Express**: Fast, unopinionated web framework for Node.js
 - **tsoa**: Automatic OpenAPI/Swagger specification generation from TypeScript decorators
+- **Swagger UI**: Interactive API documentation playground at `/docs`
 - **Custom Types**: Well-defined request/response models
 - **Multiple Controllers**: Example controllers for Users and Products
 - **CRUD Operations**: Complete Create, Read, Update, Delete operations
@@ -99,6 +100,7 @@ The server will start on `http://localhost:3000`
 
 ### Documentation
 - `GET /swagger.json` - OpenAPI specification
+- `GET /docs` - Interactive Swagger UI playground
 
 ## Example API Calls
 
@@ -150,13 +152,23 @@ curl http://localhost:3000/api/users/1
 ## OpenAPI Specification
 
 The OpenAPI specification is automatically generated from TypeScript decorators and can be accessed at:
-- `http://localhost:3000/swagger.json`
+- `http://localhost:3000/swagger.json` - Raw OpenAPI JSON specification
+- `http://localhost:3000/docs` - Interactive Swagger UI playground
 
 The specification includes:
 - All endpoints with request/response schemas
 - Parameter descriptions and examples
 - Error response definitions
 - Model definitions with validation rules
+
+### Using Swagger UI
+
+The Swagger UI at `/docs` provides an interactive playground where you can:
+- Browse all available API endpoints
+- View detailed request/response schemas
+- Test API endpoints directly from the browser
+- See example requests and responses
+- Understand authentication requirements
 
 ## Authentication
 

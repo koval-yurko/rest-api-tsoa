@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./routes/routes";
 import { ErrorResponse } from "./models/Common";
 
@@ -48,6 +49,23 @@ app.get("/swagger.json", (req: Request, res: Response) => {
   }
 });
 
+// Serve Swagger UI
+app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const swaggerSpec = require("../dist/swagger.json");
+    swaggerUi.setup(swaggerSpec, {
+      explorer: true,
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: "TypeScript Express API Documentation"
+    })(req, res, next);
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: "OpenAPI spec not found. Run 'npm run generate-spec' first."
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error("Error:", err);
@@ -79,6 +97,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
   console.log(`📋 OpenAPI Spec: http://localhost:${PORT}/swagger.json`);
+  console.log(`📚 Swagger UI: http://localhost:${PORT}/docs`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/users`);
   console.log(`📦 Products API: http://localhost:${PORT}/api/products`);
 });

@@ -55,12 +55,19 @@ curl "http://localhost:3000/api/products/search?category=electronics&page=1&limi
 curl http://localhost:3000/swagger.json
 ```
 
+### Access Interactive Documentation
+Open your browser and visit:
+```
+http://localhost:3000/docs
+```
+
 ## 🔧 Available Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
 | GET | `/swagger.json` | OpenAPI specification |
+| GET | `/docs` | Interactive Swagger UI |
 | GET | `/api/users` | Get all users |
 | GET | `/api/users/{id}` | Get user by ID |
 | POST | `/api/users` | Create user |
