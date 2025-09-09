@@ -11,17 +11,7 @@
       "version": "1.0.0",
       "description": "API built with TypeScript, Express, and tsoa"
     },
-    "basePath": "/api",
-    "components": {
-      "securitySchemes": {
-        "ApiKeyAuth": {
-          "type": "apiKey",
-          "name": "X-API-KEY",
-          "in": "header",
-          "description": "API key for authentication"
-        }
-      }
-    }
+    "basePath": "/api"
   },
   "routes": {
     "routesDir": "src/openapi",
