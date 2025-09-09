@@ -107,7 +107,7 @@ export class UserController extends Controller {
    * @param limit Items per page (default: 10)
    */
   @Get()
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "Users retrieved successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("500", "Internal server error")
@@ -149,7 +149,7 @@ export class UserController extends Controller {
    * @param userId The user's identifier
    */
   @Get("{userId}")
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "User retrieved successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "User not found")
@@ -190,7 +190,7 @@ export class UserController extends Controller {
    * @param requestBody User creation data
    */
   @Post()
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("201", "User created successfully")
   @Response<ErrorResponse>("400", "Invalid request data")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
@@ -227,7 +227,7 @@ export class UserController extends Controller {
    * @param requestBody User update data
    */
   @Put("{userId}")
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "User updated successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "User not found")
@@ -272,7 +272,7 @@ export class UserController extends Controller {
    * @param userId The user's identifier
    */
   @Delete("{userId}")
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "User deleted successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "User not found")

@@ -26,7 +26,8 @@ app.use(cors({
     "Content-Type", 
     "Accept", 
     "Authorization", 
-    "x-api-key", 
+    "x-api-key",
+    "X-API-KEY", 
     "Cache-Control", 
     "Pragma", 
     "Expires"
@@ -37,7 +38,8 @@ app.use(cors({
     "Content-Length", 
     "Content-Type", 
     "Authorization", 
-    "x-api-key", 
+    "x-api-key",
+    "X-API-KEY", 
     "X-Total-Count"
   ],
   
@@ -135,34 +137,8 @@ app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFuncti
         displayRequestDuration: true,
         filter: true,
         showExtensions: true,
-        showCommonExtensions: true,
-        // Pre-populate with example API key for easier testing
-        initOAuth: {
-          clientId: "swagger-ui",
-          realm: "swagger-ui-realm",
-          appName: "Swagger UI"
-        }
-      },
-      customJs: `
-        // Add custom JavaScript to enhance the auth experience
-        window.onload = function() {
-          // Add helpful text about API keys
-          setTimeout(function() {
-            const authSection = document.querySelector('.auth-wrapper');
-            if (authSection && !document.querySelector('.api-key-help')) {
-              const helpText = document.createElement('div');
-              helpText.className = 'api-key-help';
-              helpText.style.cssText = 'background: #e7f3ff; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #0066cc;';
-              helpText.innerHTML = '<strong>Available API Keys for Testing:</strong><br/>' +
-                '• demo-api-key (Demo User)<br/>' +
-                '• test-api-key-123 (Test User)<br/>' +
-                '• admin-key-456 (Admin User)<br/>' +
-                '• user-key-789 (Regular User)';
-              authSection.insertBefore(helpText, authSection.firstChild);
-            }
-          }, 1000);
-        };
-      `
+        showCommonExtensions: true
+      }
     };
     
     swaggerUi.setup(dynamicSpec, swaggerOptions)(req, res, next);

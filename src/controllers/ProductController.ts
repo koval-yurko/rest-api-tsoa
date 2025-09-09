@@ -242,7 +242,7 @@ export class ProductController extends Controller {
    * @param requestBody Product creation data
    */
   @Post()
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("201", "Product created successfully")
   @Response<ErrorResponse>("400", "Invalid request data")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
@@ -282,7 +282,7 @@ export class ProductController extends Controller {
    * @param requestBody Product update data
    */
   @Put("{productId}")
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "Product updated successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "Product not found")
@@ -314,7 +314,7 @@ export class ProductController extends Controller {
    * @param productId The product's identifier
    */
   @Delete("{productId}")
-  @Security("api_key")
+  @Security("ApiKeyAuth")
   @SuccessResponse("200", "Product deleted successfully")
   @Response<ErrorResponse>("401", "Unauthorized - Invalid API key")
   @Response<ErrorResponse>("404", "Product not found")

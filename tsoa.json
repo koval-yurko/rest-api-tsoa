@@ -14,11 +14,11 @@
     "basePath": "/api",
     "components": {
       "securitySchemes": {
-        "api_key": {
+        "ApiKeyAuth": {
           "type": "apiKey",
-          "name": "x-api-key",
+          "name": "X-API-KEY",
           "in": "header",
-          "description": "API key for authentication. Use one of: demo-api-key, test-api-key-123, admin-key-456, user-key-789"
+          "description": "API key for authentication"
         }
       }
     }
