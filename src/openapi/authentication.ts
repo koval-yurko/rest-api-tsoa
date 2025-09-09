@@ -23,7 +23,7 @@ export interface AuthenticatedUser {
 
 /**
  * Authentication function for TSOA
- * Validates API keys provided in the x-api-key header or query parameter
+ * Validates API keys provided in the X-API-KEY header or query parameter
  */
 export function expressAuthentication(
   request: Request,
@@ -31,13 +31,14 @@ export function expressAuthentication(
   scopes?: string[]
 ): Promise<AuthenticatedUser> {
   return new Promise((resolve, reject) => {
-    if (securityName === "api_key") {
+    if (securityName === "ApiKeyAuth") {
       // Extract API key from header (preferred) or query parameter (fallback)
       const apiKey = (request.headers["x-api-key"] as string) || 
+                    (request.headers["X-API-KEY"] as string) ||
                     (request.query.apiKey as string);
       
       if (!apiKey) {
-        reject(new Error("API key is required. Please provide it in the 'x-api-key' header or 'apiKey' query parameter."));
+        reject(new Error("API key is required. Please provide it in the 'X-API-KEY' header or 'apiKey' query parameter."));
         return;
       }
 

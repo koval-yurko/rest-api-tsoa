@@ -4,16 +4,21 @@
   "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
   "iocModule": "src/openapi/ioc.ts",
   "spec": {
-    "outputDirectory": "dist",
+    "outputDirectory": "src/openapi",
     "specVersion": 3,
     "info": {
       "title": "TypeScript Express API",
       "version": "1.0.0",
       "description": "API built with TypeScript, Express, and tsoa"
     },
-    "host": "localhost:3000",
-    "schemes": ["http"],
-    "basePath": "/api"
+    "basePath": "/api",
+    "securityDefinitions": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY"
+      }
+    }
   },
   "routes": {
     "routesDir": "src/openapi",
