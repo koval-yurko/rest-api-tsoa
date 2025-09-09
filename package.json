@@ -7,11 +7,9 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "ts-node src/app.ts",
-    "generate-spec": "node scripts/generate-spec.js",
-    "generate-routes": "tsoa routes",
-    "generate-swagger": "tsoa spec",
-    "prebuild": "npm run generate-spec",
-    "setup": "npm install && npm run generate-spec && npm run build"
+    "generate:tsoa": "tsoa routes && tsoa spec",
+    "prebuild": "npm run generate:tsoa",
+    "setup": "npm install && npm run generate:tsoa && npm run build"
   },
   "keywords": [
     "typescript",

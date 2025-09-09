@@ -17,7 +17,8 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/openapi/swagger.json"
   ],
   "exclude": [
     "node_modules",

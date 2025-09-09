@@ -3,6 +3,7 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./openapi/routes";
 import { ErrorResponse } from "./models/Common";
+import swaggerSpec from "./openapi/swagger.json";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -15,40 +16,40 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   // Allow requests from any origin (for development and Swagger UI)
   origin: "*",
-  
+
   // Allow all HTTP methods that Swagger UI might use
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
-  
+
   // Allow all headers that Swagger UI and API clients might send
   allowedHeaders: [
-    "Origin", 
-    "X-Requested-With", 
-    "Content-Type", 
-    "Accept", 
-    "Authorization", 
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
     "x-api-key",
-    "X-API-KEY", 
-    "Cache-Control", 
-    "Pragma", 
+    "X-API-KEY",
+    "Cache-Control",
+    "Pragma",
     "Expires"
   ],
-  
+
   // Expose headers that clients might need to read
   exposedHeaders: [
-    "Content-Length", 
-    "Content-Type", 
-    "Authorization", 
+    "Content-Length",
+    "Content-Type",
+    "Authorization",
     "x-api-key",
-    "X-API-KEY", 
+    "X-API-KEY",
     "X-Total-Count"
   ],
-  
+
   // Allow credentials (cookies, authorization headers, etc.)
   credentials: true,
-  
+
   // Cache preflight requests for 24 hours to improve performance
   maxAge: 86400,
-  
+
   // Handle preflight requests
   preflightContinue: false,
   optionsSuccessStatus: 200
@@ -64,8 +65,10 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-// Register tsoa routes
-RegisterRoutes(app);
+// Create API router and register tsoa routes
+const apiRouter = express.Router();
+RegisterRoutes(apiRouter);
+app.use('/api', apiRouter);
 
 // Helper function to get the server URL dynamically
 function getServerUrl(req: Request): string {
@@ -78,11 +81,9 @@ function getServerUrl(req: Request): string {
 // Serve OpenAPI spec with dynamic server configuration
 app.get("/swagger.json", (req: Request, res: Response) => {
   try {
-    const swaggerSpec = require("../dist/swagger.json");
-    
     // Dynamically set the server URL based on the request
     const serverUrl = getServerUrl(req);
-    
+
     // Update the spec with the current server URL
     const dynamicSpec = {
       ...swaggerSpec,
@@ -93,7 +94,7 @@ app.get("/swagger.json", (req: Request, res: Response) => {
         }
       ]
     };
-    
+
     res.json(dynamicSpec);
   } catch (error) {
     res.status(404).json({
@@ -106,11 +107,9 @@ app.get("/swagger.json", (req: Request, res: Response) => {
 // Serve Swagger UI with enhanced configuration
 app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
   try {
-    const swaggerSpec = require("../dist/swagger.json");
-    
     // Dynamically set the server URL based on the request
     const serverUrl = getServerUrl(req);
-    
+
     // Update the spec with the current server URL
     const dynamicSpec = {
       ...swaggerSpec,
@@ -121,7 +120,7 @@ app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFuncti
         }
       ]
     };
-    
+
     // Enhanced Swagger UI configuration
     const swaggerOptions = {
       explorer: true,
@@ -137,10 +136,17 @@ app.use("/docs", swaggerUi.serve, (req: Request, res: Response, next: NextFuncti
         displayRequestDuration: true,
         filter: true,
         showExtensions: true,
-        showCommonExtensions: true
+        showCommonExtensions: true,
+        // supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        // preauthorizeApiKey: function(apiKeyAuth: string, name: string, value: string) {
+        //   console.log('preauthorizeApiKey', apiKeyAuth, name, value);
+        //   return {
+        //     [name]: value
+        //   };
+        // }
       }
     };
-    
+
     swaggerUi.setup(dynamicSpec, swaggerOptions)(req, res, next);
   } catch (error) {
     res.status(404).json({
